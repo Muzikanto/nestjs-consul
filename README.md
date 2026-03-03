@@ -54,7 +54,7 @@ import Consul from 'consul';
 import { InjectConsul } from '@muzikanto/nestjs-consul';
 
 @Injectable()
-export class AiService {
+export class RegistrationService {
   constructor(
     @InjectConsul('test') private readonly consul: Consul,
   ) {}
