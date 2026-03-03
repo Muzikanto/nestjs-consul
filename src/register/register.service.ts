@@ -1,4 +1,3 @@
-// consul-registration.service.ts
 import {
   Inject,
   Injectable,
