@@ -2,20 +2,21 @@
 import {
   Inject,
   Injectable,
-  OnModuleDestroy,
-  OnModuleInit,
+  Logger,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
 } from "@nestjs/common";
 import Consul from "consul";
 import { randomUUID } from "crypto";
-import { InjectConsul } from "@muzikanto/nestjs-consul";
 import { CONSUL_REGISTRATION_OPTIONS } from "./register.constants";
 import { ConsulRegistrationOptions } from "./register.types";
 
 @Injectable()
 export class ConsulRegistrationService
-  implements OnModuleInit, OnModuleDestroy
+  implements OnApplicationBootstrap, OnApplicationShutdown
 {
   private serviceId!: string;
+  private logger = new Logger('Consul');
 
   constructor(
     protected readonly consul: Consul,
@@ -23,18 +24,22 @@ export class ConsulRegistrationService
     private readonly options: ConsulRegistrationOptions,
   ) {}
 
-  async onModuleInit() {
+  async onApplicationBootstrap() {
     this.serviceId = this.options.id || `${this.options.name}-${randomUUID()}`;
 
     await this.consul.agent.service.register({
       ...this.options,
       id: this.serviceId,
     });
+
+    this.logger.debug(`Service register ${this.options.name}`)
   }
 
-  async onModuleDestroy() {
+  async onApplicationShutdown() {
     if (!this.serviceId) return;
 
     await this.consul.agent.service.deregister(this.serviceId);
+
+    this.logger.debug(`Service deregister ${this.options.name}`)
   }
 }

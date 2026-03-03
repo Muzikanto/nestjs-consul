@@ -1,4 +1,3 @@
-// consul-registration.module.ts
 import { DynamicModule, Module, Provider } from "@nestjs/common";
 import { CONSUL_REGISTRATION_OPTIONS } from "./register.constants";
 import {
@@ -8,7 +7,7 @@ import {
 } from "./register.types";
 import { ConsulRegistrationService } from "./register.service";
 import Consul from "consul";
-import { CONSUL_CLIENT } from "../consul.constants";
+import { CONSUL_CLIENT, CONSUL_MODULE_OPTIONS } from "../consul.constants";
 
 @Module({})
 export class ConsulRegistrationModule {
@@ -25,7 +24,7 @@ export class ConsulRegistrationModule {
         },
         {
           provide: ConsulRegistrationService,
-          useFactory: (consul: Consul) => consul,
+          useFactory: (consul: Consul) => new ConsulRegistrationService(consul, options),
           inject: [CONSUL_CLIENT(consulName)],
         },
       ],
@@ -45,8 +44,8 @@ export class ConsulRegistrationModule {
         ...asyncProviders,
         {
           provide: ConsulRegistrationService,
-          useFactory: (consul: Consul) => consul,
-          inject: [CONSUL_CLIENT(consulName)],
+          useFactory: (consul: Consul, options: ConsulRegistrationOptions) => new ConsulRegistrationService(consul, options),
+          inject: [CONSUL_CLIENT(consulName), CONSUL_MODULE_OPTIONS],
         },
       ],
     };
