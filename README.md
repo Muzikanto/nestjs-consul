@@ -32,13 +32,13 @@ Peer dependencies: `@nestjs/common, @nestjs/core, consul`
 
 ```ts
 // app.module.ts
-import { Module } from '@nestjs/common';
-import { ConsulModule } from '@muzikanto/nestjs-consul';
+import { Module } from "@nestjs/common";
+import { ConsulModule } from "@muzikanto/nestjs-consul";
 
 @Module({
   imports: [
     ConsulModule.forRoot({
-      host: 'localhost',
+      host: "localhost",
       port: 8500,
     }),
   ],
@@ -49,15 +49,13 @@ export class AppModule {}
 ### Using the Client in a Service
 
 ```ts
-import { Inject, Injectable } from '@nestjs/common';
-import Consul from 'consul';
-import { InjectConsul } from '@muzikanto/nestjs-consul';
+import { Inject, Injectable } from "@nestjs/common";
+import Consul from "consul";
+import { InjectConsul } from "@muzikanto/nestjs-consul";
 
 @Injectable()
 export class RegistrationService {
-  constructor(
-    @InjectConsul('test') private readonly consul: Consul,
-  ) {}
+  constructor(@InjectConsul("test") private readonly consul: Consul) {}
 
   async registerService() {
     await this.consul.agent.service.register({
@@ -74,20 +72,20 @@ Useful when working with ConfigModule or external configuration providers.
 Using useFactory
 
 ```ts
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ConsulModule } from '@muzikanto/nestjs-consul';
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConsulModule } from "@muzikanto/nestjs-consul";
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     ConsulModule.forRootAsync({
-      name: 'test',
+      name: "test",
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
-        host: config.get<string>('CONSUL_HOST'),
-        port: +config.get<number>('CONSUL_PORT'),
+        host: config.get<string>("CONSUL_HOST"),
+        port: +config.get<number>("CONSUL_PORT"),
       }),
     }),
   ],
@@ -98,13 +96,11 @@ export class AppModule {}
 Using useClass
 
 ```ts
-import { Injectable } from '@nestjs/common';
-import { ConsulModuleOptionsFactory } from '@muzikanto/nestjs-consul';
+import { Injectable } from "@nestjs/common";
+import { ConsulModuleOptionsFactory } from "@muzikanto/nestjs-consul";
 
 @Injectable()
-export class ConsulConfigService
-  implements ConsulModuleOptionsFactory
-{
+export class ConsulConfigService implements ConsulModuleOptionsFactory {
   createConsulModuleOptions() {
     return {
       host: process.env.CONSUL_HOST,
@@ -128,13 +124,13 @@ You can register multiple OpenAI clients with different configurations.
 @Module({
   imports: [
     ConsulModule.forRoot({
-      name: 'primary',
-      host: 'localhost',
+      name: "primary",
+      host: "localhost",
       port: 8500,
     }),
     ConsulModule.forRoot({
-      name: 'secondary',
-      host: 'localhost',
+      name: "secondary",
+      host: "localhost",
       port: 8501,
     }),
   ],
@@ -146,13 +142,40 @@ export class AppModule {}
 @Injectable()
 export class MultiConsulService {
   constructor(
-    @InjectConsul('primary')
+    @InjectConsul("primary")
     private readonly primaryClient: OpenAI,
 
-    @InjectConsul('secondary')
+    @InjectConsul("secondary")
     private readonly secondaryClient: OpenAI,
   ) {}
 }
+```
+
+## Registration
+
+```ts
+import { Module } from '@nestjs/common';
+import { ConsulRegistrationModule } from '@muzikanto/nestjs-consul/register';
+
+@Module({
+  imports: [
+    ConsulRegistrationModule.forRoot({
+      consulName: 'default',
+      name: 'users-service',
+      id: 'users-service-1',
+      address: 'localhost',
+      port: 3000,
+      tags: ['api', 'users'],
+      check: {
+        name: 'HTTP Health Check',
+        http: 'http://localhost:3000/health',
+        interval: '10s',
+        timeout: '5s',
+      },
+    }),
+  ],
+})
+export class AppModule {}
 ```
 
 ## Contributing

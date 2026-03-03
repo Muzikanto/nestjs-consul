@@ -1,5 +1,4 @@
-export * from './consul.decorators';
-export * from './consul.module';
-export * from './consul.types';
-export * from './consul.constants';
-
+export * from "./consul.decorators";
+export * from "./consul.module";
+export * from "./consul.types";
+export * from "./consul.constants";

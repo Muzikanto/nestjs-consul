@@ -1,4 +1,4 @@
-import { ModuleMetadata, Type } from '@nestjs/common';
+import { ModuleMetadata, Type } from "@nestjs/common";
 import { Agent as httpAgent } from "http";
 import { Agent as httpsAgent } from "https";
 
@@ -24,10 +24,12 @@ export type ConsulModuleOptions = {
   secure?: boolean;
   defaults?: DefaultOptions;
   agent?: httpAgent | httpsAgent;
-}
+};
 
-export interface ConsulModuleAsyncOptions
-  extends Pick<ModuleMetadata, 'imports'> {
+export interface ConsulModuleAsyncOptions extends Pick<
+  ModuleMetadata,
+  "imports"
+> {
   useFactory?: (
     ...args: any[]
   ) => Promise<ConsulModuleOptions> | ConsulModuleOptions;
@@ -37,7 +39,7 @@ export interface ConsulModuleAsyncOptions
 }
 
 export interface ConsulModuleOptionsFactory {
-  createConsulModuleOptions(name?: string):
-    | Promise<ConsulModuleOptions>
-    | ConsulModuleOptions;
+  createConsulModuleOptions(
+    name?: string,
+  ): Promise<ConsulModuleOptions> | ConsulModuleOptions;
 }
