@@ -60,7 +60,9 @@ export class RegistrationService {
   ) {}
 
   async registerService() {
-    await this.consul.register(...);
+    await this.consul.agent.service.register({
+      /* some config */
+    });
   }
 }
 ```
