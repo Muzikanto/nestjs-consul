@@ -30,15 +30,11 @@ export class ConsulRegistrationService
       ...this.options,
       id: this.serviceId,
     });
-
-    console.log(`✅ Consul service registered: ${this.serviceId}`);
   }
 
   async onModuleDestroy() {
     if (!this.serviceId) return;
 
     await this.consul.agent.service.deregister(this.serviceId);
-
-    console.log(`🛑 Consul service deregistered: ${this.serviceId}`);
   }
 }
