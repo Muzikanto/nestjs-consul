@@ -4,6 +4,7 @@ import {
   Logger,
   OnApplicationBootstrap,
   OnApplicationShutdown,
+  OnModuleDestroy,
 } from "@nestjs/common";
 import Consul from "consul";
 import { randomUUID } from "crypto";
@@ -35,7 +36,10 @@ export class ConsulRegistrationService
   }
 
   async onApplicationShutdown() {
-    if (!this.serviceId) return;
+    if (!this.serviceId) {
+      this.logger.warn(`Service does not registered ${this.options.name}`)
+      return;
+    }
 
     await this.consul.agent.service.deregister(this.serviceId);
 
